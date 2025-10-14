@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Water Level Capture - River Monitor</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #1a1f3a;
+      --bg-tertiary: #2a2f4a;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #ff6b6b;
+      --accent-tertiary: #4ecdc4;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a9c0;
+      --card-bg: rgba(26, 31, 58, 0.8);
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      z-index: -2;
+    }
+    
+    /* Floating Particles */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(0, 212, 255, 0.1), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 107, 107, 0.1), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(78, 205, 196, 0.1), transparent),
+        radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.1), transparent);
+      background-repeat: repeat;
+      background-size: 200px 100px;
+      animation: float 20s linear infinite;
+      z-index: -1;
+      opacity: 0.6;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    .capture-container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      color: var(--text-primary);
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+    
+    .camera-container {
+      position: relative;
+      margin: 30px 0;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 25px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .camera-preview {
+      width: 100%;
+      max-width: 400px;
+      height: 300px;
+      border: 2px dashed var(--accent-primary);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-secondary);
+      margin: 0 auto 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .camera-preview:hover {
+      border-color: var(--accent-secondary);
+      transform: scale(1.02);
+    }
+    
+    .captured-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    
+    .camera-placeholder {
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    
+    .camera-placeholder i {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      display: block;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 8px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+    }
+    
+    .btn:hover {
+      background: linear-gradient(135deg, var(--accent-tertiary), var(--accent-primary));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      border-color: var(--accent-primary);
+    }
+    
+    .metadata {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 25px 0;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .metadata::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+    }
+    
+    .metadata h4 {
+      margin: 0 0 15px 0;
+      color: var(--text-primary);
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    
+    .metadata p {
+      margin: 8px 0;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+    
+    .back-btn {
+      margin-bottom: 25px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .capture-container {
+        padding: 15px;
+      }
+      
+      h2 {
+        font-size: 2rem;
+      }
+      
+      .camera-container {
+        padding: 20px;
+      }
+      
+      .camera-preview {
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="capture-container">
+    <button class="btn btn-secondary back-btn" onclick="goBack()">
+      <i class="ri-arrow-left-line"></i> Back to Dashboard
+    </button>
+    
+    <h2><i class="ri-camera-line"></i> Water Level Capture</h2>
+    
+    <form id="waterLevelForm">
+      <div class="form-group">
+        <label for="siteId">Site ID</label>
+        <input type="text" id="siteId" placeholder="Enter Site ID (e.g., SITE001)" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="waterLevel">Water Level (meters)</label>
+        <input type="number" id="waterLevel" step="0.1" placeholder="e.g., 5.2" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="measurementType">Measurement Type</label>
+        <select id="measurementType" required>
+          <option value="">Select measurement type</option>
+          <option value="manual">Manual Reading</option>
+          <option value="sensor">Sensor Reading</option>
+          <option value="estimated">Estimated</option>
+        </select>
+      </div>
+      
+      <div class="camera-container">
+        <div class="camera-preview" id="cameraPreview">
+          <div class="camera-placeholder">
+            <i class="ri-camera-line"></i>
+            <p>Click to capture photo</p>
+          </div>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" style="display: none;">
+        <button type="button" class="btn" onclick="document.getElementById('photoInput').click()">
+          <i class="ri-camera-line"></i> Take Photo
+        </button>
+      </div>
+      
+      <div class="metadata">
+        <h4>Capture Metadata</h4>
+        <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+        <p><strong>Location:</strong> <span id="location"></span></p>
+        <p><strong>Operator:</strong> <span id="operator"></span></p>
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Additional Notes (Optional)</label>
+        <textarea id="notes" rows="3" placeholder="Any additional observations or notes..."></textarea>
+      </div>
+      
+      <button type="submit" class="btn">
+        <i class="ri-save-line"></i> Submit Reading
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Authentication system
+    const auth = {
+      get current() { 
+        return JSON.parse(localStorage.getItem('session') || 'null') 
+      }
+    };
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentUser = auth.current;
+      
+      if (!currentUser) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Update metadata
+      document.getElementById('timestamp').textContent = new Date().toLocaleString();
+      document.getElementById('location').textContent = 'GPS: 12.9716° N, 77.5946° E (Demo)';
+      document.getElementById('operator').textContent = currentUser.name;
+      
+      setupPhotoCapture();
+      setupForm();
+    });
+
+    // Setup photo capture
+    function setupPhotoCapture() {
+      const photoInput = document.getElementById('photoInput');
+      const preview = document.getElementById('cameraPreview');
+      
+      photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Captured photo" class="captured-image">`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Setup form submission
+    function setupForm() {
+      const form = document.getElementById('waterLevelForm');
+      
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+          id: Date.now(),
+          siteId: document.getElementById('siteId').value,
+          waterLevel: parseFloat(document.getElementById('waterLevel').value),
+          measurementType: document.getElementById('measurementType').value,
+          timestamp: new Date().toISOString(),
+          location: document.getElementById('location').textContent,
+          operator: document.getElementById('operator').textContent,
+          notes: document.getElementById('notes').value,
+          photo: document.getElementById('photoInput').files[0] ? 'captured' : null
+        };
+        
+        // Validate required fields
+        if (!formData.siteId || !formData.waterLevel || !formData.measurementType) {
+          alert('Please fill in all required fields');
+          return;
+        }
+        
+        // Store reading
+        let readings = JSON.parse(localStorage.getItem('waterReadings') || '[]');
+        
+        // If no readings exist, create some mock data first
+        if (readings.length === 0) {
+          readings = generateInitialMockData();
+        }
+        
+        readings.push(formData);
+        localStorage.setItem('waterReadings', JSON.stringify(readings));
+        
+        alert('Water level reading submitted successfully!');
+        form.reset();
+        document.getElementById('cameraPreview').innerHTML = `
+          <div class="camera-placeholder">
+            <i class="ri-camera-line"></i>
+            <p>Click to capture photo</p>
+          </div>
+        `;
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+      });
+    }
+
+    // Generate initial mock data for water level readings
+    function generateInitialMockData() {
+      const mockData = [];
+      const sites = ['SITE001', 'SITE002', 'SITE003', 'SITE004'];
+      const operators = ['John Smith', 'Sarah Johnson', 'Mike Chen', 'Emily Davis'];
+      const measurementTypes = ['manual', 'sensor', 'estimated'];
+      
+      // Generate 8 mock records from the last week
+      for (let i = 0; i < 8; i++) {
+        const daysAgo = Math.floor(Math.random() * 7); // Last 7 days
+        const timestamp = new Date();
+        timestamp.setDate(timestamp.getDate() - daysAgo);
+        timestamp.setHours(Math.floor(Math.random() * 24));
+        timestamp.setMinutes(Math.floor(Math.random() * 60));
+        
+        const record = {
+          id: Date.now() + i,
+          siteId: sites[Math.floor(Math.random() * sites.length)],
+          waterLevel: parseFloat((Math.random() * 6 + 2).toFixed(2)), // 2.0 to 8.0 meters
+          measurementType: measurementTypes[Math.floor(Math.random() * measurementTypes.length)],
+          timestamp: timestamp.toISOString(),
+          location: `GPS: ${(12.9 + Math.random() * 0.2).toFixed(4)}° N, ${(77.5 + Math.random() * 0.2).toFixed(4)}° E`,
+          operator: operators[Math.floor(Math.random() * operators.length)],
+          notes: i % 2 === 0 ? `Previous reading: Water level stable.` : '',
+          status: 'verified',
+          photo: i % 3 === 0 ? 'captured' : null
+        };
+        
+        mockData.push(record);
+      }
+      
+      return mockData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    // Navigation
+    function goBack() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings - River Monitor</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #1a1f3a;
+      --bg-tertiary: #2a2f4a;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #ff6b6b;
+      --accent-tertiary: #4ecdc4;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a9c0;
+      --card-bg: rgba(26, 31, 58, 0.8);
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      z-index: -2;
+    }
+    
+    /* Floating Particles */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(0, 212, 255, 0.1), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 107, 107, 0.1), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(78, 205, 196, 0.1), transparent),
+        radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.1), transparent);
+      background-repeat: repeat;
+      background-size: 200px 100px;
+      animation: float 20s linear infinite;
+      z-index: -1;
+      opacity: 0.6;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    .settings-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .settings-section {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .settings-section h3 {
+      margin: 0 0 20px 0;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 16px;
+    }
+    
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+    
+    .btn-secondary {
+      background: var(--text-secondary);
+    }
+    
+    .btn-secondary:hover {
+      background: #555;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+    }
+    
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    
+    .btn-success {
+      background: #28a745;
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+    }
+    
+    .back-btn {
+      margin-bottom: 20px;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--accent-color);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    .user-info {
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .user-info h4 {
+      margin: 0 0 10px 0;
+      color: var(--text-primary);
+    }
+    
+    .user-info p {
+      margin: 5px 0;
+      color: var(--text-secondary);
+    }
+    
+    .status-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <button class="btn btn-secondary back-btn" onclick="goBack()">
+      <i class="ri-arrow-left-line"></i> Back to Dashboard
+    </button>
+    
+    <h2><i class="ri-settings-line"></i> Settings</h2>
+    
+    <!-- User Information -->
+    <div class="settings-section">
+      <h3><i class="ri-user-line"></i> Account Information</h3>
+      <div class="user-info">
+        <h4 id="userName">Loading...</h4>
+        <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+        <p><strong>Member since:</strong> <span id="memberSince">Loading...</span></p>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="displayName">Display Name</label>
+          <input type="text" id="displayName" placeholder="Enter display name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter email address">
+        </div>
+      </div>
+      
+      <button class="btn" onclick="updateProfile()">
+        <i class="ri-save-line"></i> Update Profile
+      </button>
+    </div>
+    
+    <!-- Change Password -->
+    <div class="settings-section">
+      <h3><i class="ri-lock-line"></i> Change Password</h3>
+      
+      <div class="form-group">
+        <label for="currentPassword">Current Password</label>
+        <input type="password" id="currentPassword" placeholder="Enter current password">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm new password">
+        </div>
+      </div>
+      
+      <button class="btn btn-success" onclick="changePassword()">
+        <i class="ri-key-line"></i> Change Password
+      </button>
+    </div>
+    
+    <!-- Application Settings -->
+    <div class="settings-section">
+      <h3><i class="ri-settings-3-line"></i> Application Settings</h3>
+      
+      <div class="form-group">
+        <label style="display: flex; align-items: center; gap: 10px;">
+          <span>Enable Notifications</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifications" checked>
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label style="display: flex; align-items: center; gap: 10px;">
+          <span>Auto-save Readings</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoSave" checked>
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label style="display: flex; align-items: center; gap: 10px;">
+          <span>Dark Mode</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="darkMode">
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label for="defaultSite">Default Site ID</label>
+        <input type="text" id="defaultSite" placeholder="Enter default site ID">
+      </div>
+      
+      <div class="form-group">
+        <label for="measurementUnit">Preferred Unit</label>
+        <select id="measurementUnit">
+          <option value="meters">Meters</option>
+          <option value="feet">Feet</option>
+          <option value="inches">Inches</option>
+        </select>
+      </div>
+      
+      <button class="btn" onclick="saveSettings()">
+        <i class="ri-save-line"></i> Save Settings
+      </button>
+    </div>
+    
+    <!-- Data Management -->
+    <div class="settings-section">
+      <h3><i class="ri-database-line"></i> Data Management</h3>
+      
+      <div class="form-group">
+        <label for="dataRetention">Data Retention Period</label>
+        <select id="dataRetention">
+          <option value="30">30 days</option>
+          <option value="90" selected>90 days</option>
+          <option value="180">180 days</option>
+          <option value="365">1 year</option>
+          <option value="0">Keep forever</option>
+        </select>
+      </div>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-secondary" onclick="exportAllData()">
+          <i class="ri-download-line"></i> Export All Data
+        </button>
+        <button class="btn btn-secondary" onclick="clearOldData()">
+          <i class="ri-delete-bin-line"></i> Clear Old Data
+        </button>
+        <button class="btn btn-danger" onclick="resetAllData()">
+          <i class="ri-refresh-line"></i> Reset All Data
+        </button>
+      </div>
+    </div>
+    
+    <!-- Account Actions -->
+    <div class="settings-section">
+      <h3><i class="ri-user-settings-line"></i> Account Actions</h3>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-danger" onclick="logout()">
+          <i class="ri-logout-box-line"></i> Logout
+        </button>
+        <button class="btn btn-danger" onclick="deleteAccount()">
+          <i class="ri-user-unfollow-line"></i> Delete Account
+        </button>
+      </div>
+    </div>
+    
+    <div id="statusMessage"></div>
+  </div>
+
+  <script>
+    // Authentication system
+    const auth = {
+      get current() { 
+        return JSON.parse(localStorage.getItem('session') || 'null') 
+      },
+      set current(v) { 
+        if(v) localStorage.setItem('session', JSON.stringify(v)); 
+        else localStorage.removeItem('session') 
+      },
+      get users() { 
+        return JSON.parse(localStorage.getItem('users') || '[]') 
+      },
+      set users(v) { 
+        localStorage.setItem('users', JSON.stringify(v)) 
+      }
+    };
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentUser = auth.current;
+      
+      if (!currentUser) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      loadUserInfo();
+      loadSettings();
+    });
+
+    // Load user information
+    function loadUserInfo() {
+      const currentUser = auth.current;
+      
+      document.getElementById('userName').textContent = currentUser.name;
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('memberSince').textContent = new Date().toLocaleDateString();
+      
+      document.getElementById('displayName').value = currentUser.name;
+      document.getElementById('email').value = currentUser.email;
+    }
+
+    // Load application settings
+    function loadSettings() {
+      const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+      
+      document.getElementById('notifications').checked = settings.notifications !== false;
+      document.getElementById('autoSave').checked = settings.autoSave !== false;
+      document.getElementById('darkMode').checked = settings.darkMode === true;
+      document.getElementById('defaultSite').value = settings.defaultSite || '';
+      document.getElementById('measurementUnit').value = settings.measurementUnit || 'meters';
+      document.getElementById('dataRetention').value = settings.dataRetention || 90;
+    }
+
+    // Update user profile
+    function updateProfile() {
+      const displayName = document.getElementById('displayName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      
+      if (!displayName || !email) {
+        showStatus('Please fill in all fields', 'error');
+        return;
+      }
+      
+      // Update current session
+      const currentUser = auth.current;
+      currentUser.name = displayName;
+      currentUser.email = email;
+      auth.current = currentUser;
+      
+      // Update user in users array
+      const users = auth.users;
+      const userIndex = users.findIndex(u => u.email === currentUser.email);
+      if (userIndex !== -1) {
+        users[userIndex].name = displayName;
+        users[userIndex].email = email;
+        auth.users = users;
+      }
+      
+      showStatus('Profile updated successfully!', 'success');
+      loadUserInfo();
+    }
+
+    // Change password
+    function changePassword() {
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        showStatus('Please fill in all password fields', 'error');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        showStatus('New passwords do not match', 'error');
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        showStatus('New password must be at least 6 characters', 'error');
+        return;
+      }
+      
+      // Verify current password
+      const currentUser = auth.current;
+      const users = auth.users;
+      const user = users.find(u => u.email === currentUser.email);
+      
+      if (!user || user.pass !== currentPassword) {
+        showStatus('Current password is incorrect', 'error');
+        return;
+      }
+      
+      // Update password
+      user.pass = newPassword;
+      auth.users = users;
+      
+      // Clear password fields
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+      
+      showStatus('Password changed successfully!', 'success');
+    }
+
+    // Save application settings
+    function saveSettings() {
+      const settings = {
+        notifications: document.getElementById('notifications').checked,
+        autoSave: document.getElementById('autoSave').checked,
+        darkMode: document.getElementById('darkMode').checked,
+        defaultSite: document.getElementById('defaultSite').value,
+        measurementUnit: document.getElementById('measurementUnit').value,
+        dataRetention: parseInt(document.getElementById('dataRetention').value)
+      };
+      
+      localStorage.setItem('appSettings', JSON.stringify(settings));
+      showStatus('Settings saved successfully!', 'success');
+    }
+
+    // Export all data
+    function exportAllData() {
+      const data = {
+        user: auth.current,
+        settings: JSON.parse(localStorage.getItem('appSettings') || '{}'),
+        readings: JSON.parse(localStorage.getItem('waterReadings') || '[]'),
+        locations: JSON.parse(localStorage.getItem('monitoringLocations') || '[]'),
+        exportDate: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `river_monitor_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      showStatus('Data exported successfully!', 'success');
+    }
+
+    // Clear old data
+    function clearOldData() {
+      const retentionDays = parseInt(document.getElementById('dataRetention').value);
+      
+      if (retentionDays === 0) {
+        showStatus('Data retention is set to keep forever', 'error');
+        return;
+      }
+      
+      if (confirm(`Delete data older than ${retentionDays} days?`)) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+        
+        const readings = JSON.parse(localStorage.getItem('waterReadings') || '[]');
+        const filteredReadings = readings.filter(r => new Date(r.timestamp) >= cutoffDate);
+        
+        localStorage.setItem('waterReadings', JSON.stringify(filteredReadings));
+        
+        const deletedCount = readings.length - filteredReadings.length;
+        showStatus(`${deletedCount} old records deleted`, 'success');
+      }
+    }
+
+    // Reset all data
+    function resetAllData() {
+      if (confirm('Are you sure you want to reset all data? This cannot be undone!')) {
+        if (confirm('This will delete ALL readings and locations. Are you absolutely sure?')) {
+          localStorage.removeItem('waterReadings');
+          localStorage.removeItem('monitoringLocations');
+          showStatus('All data has been reset', 'success');
+        }
+      }
+    }
+
+    // Logout
+    function logout() {
+      auth.current = null;
+      window.location.href = 'index.html';
+    }
+
+    // Delete account
+    function deleteAccount() {
+      if (confirm('Are you sure you want to delete your account? This cannot be undone!')) {
+        if (confirm('This will permanently delete your account and all associated data. Are you absolutely sure?')) {
+          const currentUser = auth.current;
+          const users = auth.users.filter(u => u.email !== currentUser.email);
+          auth.users = users;
+          auth.current = null;
+          
+          // Clear all user data
+          localStorage.removeItem('waterReadings');
+          localStorage.removeItem('monitoringLocations');
+          localStorage.removeItem('appSettings');
+          
+          window.location.href = 'index.html';
+        }
+      }
+    }
+
+    // Show status message
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+      
+      setTimeout(() => {
+        statusDiv.innerHTML = '';
+      }, 5000);
+    }
+
+    // Navigation
+    function goBack() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

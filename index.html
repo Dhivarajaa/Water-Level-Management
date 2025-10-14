@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>River Monitor Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Login Page -->
+  <div class="card active" id="loginPage">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Email</label>
+      <input type="email" id="loginEmail" required>
+      <label>Password</label>
+      <input type="password" id="loginPass" required>
+      <button type="submit">Login</button>
+    </form>
+    <p>No account? <a href="#" id="toSignup">Signup here</a></p>
+  </div>
+
+  <!-- Signup Page -->
+  <div class="card" id="signupPage">
+    <h2>Signup</h2>
+    <form id="signupForm">
+      <label>Name</label>
+      <input type="text" id="signupName" required>
+      <label>Email</label>
+      <input type="email" id="signupEmail" required>
+      <label>Password</label>
+      <input type="password" id="signupPass" required>
+      <button type="submit">Signup</button>
+    </form>
+    <p>Already have an account? <a href="#" id="toLogin">Login here</a></p>
+  </div>
+
+  <!-- Main Dashboard Page -->
+  <div class="card" id="mainPage">
+    <h2>River Monitor Dashboard</h2>
+    <p>Welcome to the River Monitor Dashboard! You are now logged in.</p>
+    
+    <div class="feature-container">
+      <div class="feature-card" onclick="window.location.href='dashboard.html'">
+        <i class="ri-dashboard-line"></i>
+        <span>Go to Full Dashboard</span>
+      </div>
+    </div>
+
+    <div class="users-card">
+      <h3>Quick Actions</h3>
+      <div class="dashboard" id="userDashboard">
+        <p><strong>Welcome:</strong> <span id="currentUserName">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="currentUserEmail">Loading...</span></p>
+      </div>
+    </div>
+
+    <p style="text-align:center;">
+      <a href="dashboard.html" style="margin-right: 20px;">Go to Dashboard</a>
+      <a href="#" id="logoutLink">Logout</a>
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
