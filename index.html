@@ -5,22 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>River Monitor Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style1.css">
 </head>
 <body>
 
   <!-- Login Page -->
-  <div class="card active" id="loginPage">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <label>Email</label>
-      <input type="email" id="loginEmail" required>
-      <label>Password</label>
-      <input type="password" id="loginPass" required>
-      <button type="submit">Login</button>
-    </form>
-    <p>No account? <a href="#" id="toSignup">Signup here</a></p>
-  </div>
+<div class="card active" id="loginPage">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <label>Email</label>
+    <input type="email" id="loginEmail" required>
+
+    <label>Password</label>
+    <input type="password" id="loginPass" required>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p>No account? <a href="#" id="toSignup">Signup here</a></p>
+</div>
 
   <!-- Signup Page -->
   <div class="card" id="signupPage">
@@ -29,7 +32,10 @@
       <label>Name</label>
       <input type="text" id="signupName" required>
       <label>Email</label>
-      <input type="email" id="signupEmail" required>
+      <div class="email-box">
+        <input type="text" id="signupUsername" placeholder="username" required>
+        <span>@gmail.com</span>
+      </div>
       <label>Password</label>
       <input type="password" id="signupPass" required>
       <button type="submit">Signup</button>
@@ -62,7 +68,209 @@
       <a href="#" id="logoutLink">Logout</a>
     </p>
   </div>
+  <style>
+    :root {
+  --bg: #0a0e27;
+  --card: #1a1f3a;
+  --accent: #00d4ff;
+  --text: #ffffff;
+  --muted: #a0a9c0;
+}
 
-  <script src="script.js"></script>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #0a0e27, #1a1f3a);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text);
+}
+
+.card {
+  width: 350px;
+  background: var(--card);
+  padding: 30px;
+  border-radius: 15px;
+  display: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.card.active {
+  display: block;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #00d4ff, #4ecdc4);
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+p {
+  text-align: center;
+  margin-top: 15px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.feature-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.05);
+  padding: 15px 25px;
+  border-radius: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.feature-card i {
+  font-size: 30px;
+  color: var(--accent);
+}
+
+.users-card {
+  margin-top: 20px;
+}
+
+    </style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+  // Page elements
+  const loginPage = document.getElementById("loginPage");
+  const signupPage = document.getElementById("signupPage");
+  const mainPage = document.getElementById("mainPage");
+
+  const toSignup = document.getElementById("toSignup");
+  const toLogin = document.getElementById("toLogin");
+  const logoutLink = document.getElementById("logoutLink");
+
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+
+  // Auth helpers
+  const auth = {
+    get session() {
+      return JSON.parse(localStorage.getItem("session"));
+    },
+    set session(data) {
+      localStorage.setItem("session", JSON.stringify(data));
+    },
+    clear() {
+      localStorage.removeItem("session");
+    }
+  };
+
+  // Switch to signup
+  toSignup.addEventListener("click", (e) => {
+    e.preventDefault();
+    loginPage.classList.remove("active");
+    signupPage.classList.add("active");
+  });
+
+  // Switch to login
+  toLogin.addEventListener("click", (e) => {
+    e.preventDefault();
+    signupPage.classList.remove("active");
+    loginPage.classList.add("active");
+  });
+
+  // Signup
+  signupForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const user = {
+      name: signupName.value.trim(),
+      email: signupEmail.value.trim(),
+      password: signupPass.value.trim()
+    };
+
+    localStorage.setItem("user", JSON.stringify(user));
+    alert("Signup successful! Please login.");
+
+signupPage.classList.remove("active");
+loginPage.classList.add("active");
+
+  loginForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const savedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!savedUser) {
+    alert("Please signup first");
+    return;
+  }
+
+  const email = loginEmail.value.trim();
+  const password = loginPass.value.trim();
+
+  if (email === savedUser.email && password === savedUser.password) {
+    localStorage.setItem(
+      "session",
+      JSON.stringify({
+        name: savedUser.name,
+        email: savedUser.email
+      })
+    );
+
+    // ✅ DIRECT DASHBOARD REDIRECT
+    window.location.href = "dash.html";
+  } else {
+    alert("Invalid credentials!");
+  }
+});
+function showMainPage() {
+  window.location.href = "dash.html";
+}
+
+
+localStorage.clear();
+
+  
+
+
+</script>
 </body>
 </html>

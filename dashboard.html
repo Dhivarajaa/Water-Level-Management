@@ -1,345 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>River Monitor Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <script>
+  if (!localStorage.getItem("session")) {
+    window.location.href = "index.html";
+  }
+</script>
+
   <style>
-    :root {
-      --bg-primary: #0a0e27;
-      --bg-secondary: #1a1f3a;
-      --bg-tertiary: #2a2f4a;
-      --accent-primary: #00d4ff;
-      --accent-secondary: #ff6b6b;
-      --accent-tertiary: #4ecdc4;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a9c0;
-      --card-bg: rgba(26, 31, 58, 0.8);
-      --border-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-    
-    /* Animated Background */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
-        linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-      z-index: -2;
-    }
-    
-    /* Floating Particles */
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.1), transparent),
-        radial-gradient(2px 2px at 40px 70px, rgba(0, 212, 255, 0.1), transparent),
-        radial-gradient(1px 1px at 90px 40px, rgba(255, 107, 107, 0.1), transparent),
-        radial-gradient(1px 1px at 130px 80px, rgba(78, 205, 196, 0.1), transparent),
-        radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.1), transparent);
-      background-repeat: repeat;
-      background-size: 200px 100px;
-      animation: float 20s linear infinite;
-      z-index: -1;
-      opacity: 0.6;
-    }
-    
-    @keyframes float {
-      0% { transform: translateY(0px) rotate(0deg); }
-      100% { transform: translateY(-100px) rotate(360deg); }
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
-    }
-    
-    .dashboard-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 30px;
-      text-align: center;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .dashboard-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.6s;
-    }
-    
-    .dashboard-card:hover::before {
-      left: 100%;
-    }
-    
-    .dashboard-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      border-color: var(--accent-primary);
-    }
-    
-    .dashboard-card i {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      transition: all 0.3s ease;
-    }
-    
-    .dashboard-card:hover i {
-      transform: scale(1.1);
-      filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
-    }
-    
-    .dashboard-card h3 {
-      margin: 0 0 15px 0;
-      color: var(--text-primary);
-      font-size: 1.3rem;
-      font-weight: 600;
-    }
-    
-    .dashboard-card p {
-      color: var(--text-secondary);
-      margin: 0;
-      line-height: 1.5;
-    }
-    
-    .user-info {
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 25px;
-      margin-bottom: 30px;
-      border: 1px solid var(--border-color);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .user-info::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
-    }
-    
-    .user-info h2 {
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 10px;
-    }
-    
-    .logout-btn {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      border-radius: 50px;
-      cursor: pointer;
-      margin-top: 30px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    }
-    
-    .logout-btn:hover {
-      background: linear-gradient(135deg, #ee5a52, #dc3545);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-    }
-    
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 2.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .back-btn {
-      background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
-      color: var(--text-primary);
-      border: 1px solid var(--border-color);
-      padding: 12px 24px;
-      border-radius: 50px;
-      cursor: pointer;
-      margin-bottom: 20px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-    
-    .back-btn:hover {
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-      
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-      
-      .dashboard-card {
-        padding: 25px;
-      }
-      
-      h2 {
-        font-size: 2rem;
-      }
-    }
+    /* --- CSS --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+    body { min-height:100vh; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,#00b4d8,#0077b6);}
+    .card { background:#fff; width:350px; padding:30px 25px; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,0.2); text-align:center; display:none;}
+    .card.active { display:block;}
+    h2 { margin-bottom:20px; color:#023e8a;}
+    form { display:flex; flex-direction:column;}
+    label { text-align:left; margin-bottom:5px; font-weight:600; color:#333;}
+    input { margin-bottom:15px; padding:10px; border:1px solid #aaa; border-radius:8px; font-size:15px; outline:none; transition:0.3s;}
+    input:focus { border-color:#0077b6; box-shadow:0 0 5px rgba(0,119,182,0.3);}
+    button { background-color:#0077b6; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; font-size:16px; transition:0.3s;}
+    button:hover { background-color:#023e8a;}
+    p { margin-top:10px; color:#333;}
+    a { color:#0077b6; text-decoration:none; font-weight:600;}
+    a:hover { text-decoration:underline;}
+    .feature-container { display:flex; justify-content:center; margin-top:25px;}
+    .feature-card { background:#f0f9ff; border-radius:12px; padding:15px; display:flex; flex-direction:column; align-items:center; cursor:pointer; transition:0.3s; width:200px;}
+    .feature-card:hover { background:#caf0f8; transform:translateY(-5px);}
+    .feature-card i { font-size:35px; color:#0077b6; margin-bottom:10px;}
+    .feature-card span { font-weight:600; color:#023e8a;}
+    .users-card { margin-top:25px; background:#e0f7fa; padding:15px; border-radius:12px; text-align:left;}
+    .users-card h3 { color:#0077b6; margin-bottom:10px;}
+    .dashboard p { margin:8px 0; color:#333;}
+    @media (max-width:480px) { .card{width:90%;padding:25px 20px;} .feature-card{width:100%;} }
+
+    /* Email box styling */
+    .email-box { position:relative; display:flex; align-items:center; margin-bottom:15px;}
+    .email-box input { flex:1; padding:10px; padding-right:80px; border:1px solid #aaa; border-radius:8px; font-size:15px; outline:none; transition:0.3s;}
+    .email-box input:focus { border-color:#0077b6; box-shadow:0 0 5px rgba(0,119,182,0.3);}
+    .email-box span { position:absolute; right:10px; color:#555; font-weight:500; pointer-events:none; font-size:14px;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="user-info">
-      <h2>River Monitor Dashboard</h2>
-      <p id="userWelcome">Welcome back!</p>
-      <p id="userEmail"></p>
-    </div>
+
+  <!-- Login Page -->
+  <div class="card active" id="loginPage">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Email</label>
+      <div class="email-box">
+        <input type="text" id="loginUsername" placeholder="username" required>
+        <span>@gmail.com</span>
+      </div>
+      <label>Password</label>
+      <input type="password" id="loginPass" required>
+      <button type="submit">Login</button>
+    </form>
+    <p>No account? <a href="#" id="toSignup">Signup here</a></p>
+  </div>
+
+  <!-- Signup Page -->
+  <div class="card" id="signupPage">
+    <h2>Signup</h2>
+    <form id="signupForm">
+      <label>Name</label>
+      <input type="text" id="signupName" required>
+      <label>Email</label>
+      <div class="email-box">
+        <input type="text" id="signupUsername" placeholder="username" required>
+        <span>@gmail.com</span>
+      </div>
+      <label>Password</label>
+      <input type="password" id="signupPass" required>
+      <button type="submit">Signup</button>
+    </form>
+    <p>Already have an account? <a href="#" id="toLogin">Login here</a></p>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div class="card" id="mainPage">
+    <h2>River Monitor Dashboard</h2>
+    <p>Welcome to the River Monitor Dashboard! You are now logged in.</p>
     
-    <div class="dashboard-grid">
-      <div class="dashboard-card" onclick="navigateTo('water-level.html')">
-        <i class="ri-camera-line"></i>
-        <h3>Capture Water Level</h3>
-        <p>Take photos and record water level measurements</p>
-      </div>
-      
-      <div class="dashboard-card" onclick="navigateTo('location.html')">
-        <i class="ri-map-pin-line"></i>
-        <h3>Location Validation</h3>
-        <p>Validate and manage monitoring locations</p>
-      </div>
-      
-      <div class="dashboard-card" onclick="navigateTo('history.html')">
-        <i class="ri-file-list-3-line"></i>
-        <h3>History Records</h3>
-        <p>View and manage historical data</p>
-      </div>
-      
-      <div class="dashboard-card" onclick="navigateTo('analytics.html')">
+    <div class="feature-container">
+      <div class="feature-card">
         <i class="ri-dashboard-line"></i>
-        <h3>Analytics Dashboard</h3>
-        <p>View charts and data analysis</p>
-      </div>
-      
-      <div class="dashboard-card" onclick="navigateTo('qr-scan.html')">
-        <i class="ri-qr-code-line"></i>
-        <h3>QR Code Scan</h3>
-        <p>Scan QR codes for site identification</p>
-      </div>
-      
-      <div class="dashboard-card" onclick="navigateTo('settings.html')">
-        <i class="ri-settings-line"></i>
-        <h3>Settings</h3>
-        <p>Manage account and application settings</p>
+        <span>Go to Full Dashboard</span>
       </div>
     </div>
-    
-    <button class="logout-btn" onclick="logout()">Logout</button>
+
+    <div class="users-card">
+      <h3>Quick Actions</h3>
+      <div class="dashboard" id="userDashboard">
+        <p><strong>Welcome:</strong> <span id="currentUserName">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="currentUserEmail">Loading...</span></p>
+      </div>
+    </div>
+
+    <p style="text-align:center;">
+      <a href="#" id="logoutLink">Logout</a>
+    </p>
   </div>
 
   <script>
-    // Authentication system
-    const auth = {
-      get current() { 
-        return JSON.parse(localStorage.getItem('session') || 'null') 
-      },
-      set current(v) { 
-        if(v) localStorage.setItem('session', JSON.stringify(v)); 
-        else localStorage.removeItem('session') 
-      }
-    };
+    // --- JS ---
+    const loginPage = document.getElementById("loginPage");
+    const signupPage = document.getElementById("signupPage");
+    const mainPage = document.getElementById("mainPage");
 
-    // Check authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      const currentUser = auth.current;
-      
-      if (!currentUser) {
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      document.getElementById('userWelcome').textContent = `Welcome, ${currentUser.name}!`;
-      document.getElementById('userEmail').textContent = currentUser.email;
+    const toSignup = document.getElementById("toSignup");
+    const toLogin = document.getElementById("toLogin");
+
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+
+    const logoutLink = document.getElementById("logoutLink");
+    const currentUserName = document.getElementById("currentUserName");
+    const currentUserEmail = document.getElementById("currentUserEmail");
+
+    // Page Switching
+    toSignup.addEventListener("click", () => {
+      loginPage.classList.remove("active");
+      signupPage.classList.add("active");
+    });
+    toLogin.addEventListener("click", () => {
+      signupPage.classList.remove("active");
+      loginPage.classList.add("active");
     });
 
-    // Navigation function
-    function navigateTo(page) {
-      window.location.href = page;
-    }
+    // Signup
+    signupForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const name = document.getElementById("signupName").value.trim();
+      const username = document.getElementById("signupUsername").value.trim();
+      const email = username + "@gmail.com";
+      const password = document.getElementById("signupPass").value;
 
-    // Logout function
-    function logout() {
-      auth.current = null;
-      window.location.href = 'index.html';
-    }
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      if(users.find(u=>u.email===email)) { alert("User already exists!"); return; }
+      users.push({name,email,password});
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Signup successful! Please login.");
+      signupForm.reset();
+      signupPage.classList.remove("active");
+      loginPage.classList.add("active");
+    });
+
+    // Login
+    loginForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const username = document.getElementById("loginUsername").value.trim();
+      const email = username + "@gmail.com";
+      const password = document.getElementById("loginPass").value;
+
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      const user = users.find(u => u.email === email && u.password === password);
+      if(!user){ alert("Invalid credentials!"); return; }
+
+      currentUserName.textContent = user.name;
+      currentUserEmail.textContent = user.email;
+      loginPage.classList.remove("active");
+      mainPage.classList.add("active");
+    });
+
+    // Logout
+    logoutLink.addEventListener("click", e => {
+      e.preventDefault();
+      mainPage.classList.remove("active");
+      loginPage.classList.add("active");
+    });
   </script>
 </body>
 </html>
